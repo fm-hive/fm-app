@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Deployment base. The static href below is the default "/app/"
+         deployment; deploy.sh rewrites it (and app/fm-config.js) from the
+         node's random_url_path. Without deploy.sh: set `base` in
+         fm-config.js and, when the app is NOT mounted in an "app" directory,
+         adjust the href here too. The scripts below make deep links work on
+         static hosts (nginx alias + SPA fallback): the "/…/app/" path is
+         recovered from the URL, so "./fm-config.js" is fetched from the app
+         root instead of being answered with index.html by the fallback. The
+         fm-config.js value still wins. -->
+    <base href="/app/" />
+    <meta charset="UTF-8" />
+    <script>
+      (function () {
+        var m = window.location.pathname.match(/^(.*?\/app)(\/|$)/)
+        var tag = document.head.querySelector('base')
+        if (m) {
+          // "<prefix>/app/echoes/…" -> "<prefix>/app/"
+          var detected = m[1] + '/'
+          var current = tag ? tag.getAttribute('href') : null
+          // Keep a more specific path (e.g. "/app/x/app/" when the prefix
+          // itself contains "/app/").
+          if (current && current.endsWith(detected)) return
+          if (!tag) {
+            tag = document.createElement('base')
+            document.head.insertBefore(tag, document.head.firstChild)
+          }
+          tag.setAttribute('href', detected)
+        } else if (tag) {
+          // No "/app/" in the path: resolve fm-config.js relative to the
+          // document URL instead of the built-in default.
+          tag.parentNode.removeChild(tag)
+        }
+      })()
+    </script>
+    <script src="./fm-config.js"></script>
+    <script>
+      (function () {
+        var cfg = window.__FM_CONFIG__ || {}
+        if (!cfg.base) return
+        var tag = document.head.querySelector('base')
+        if (!tag) {
+          tag = document.createElement('base')
+          document.head.insertBefore(tag, document.head.firstChild)
+        }
+        tag.setAttribute('href', cfg.base)
+      })()
+    </script>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
+    <title>fm-app</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

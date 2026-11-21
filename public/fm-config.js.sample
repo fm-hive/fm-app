@@ -1,0 +1,16 @@
+// Deployment configuration (copied to the build as-is — edit it after
+// deploying the dist, no rebuild needed):
+//
+//   window.__FM_CONFIG__ = { base: '/path/to/app/' }
+//
+// `base` is the public path of the app (must end with a slash): the app
+// derives the router base, the API URL (<base>/../api) and the docs URL
+// (<base>/../docs) from it. The built-in default below fits the standard
+// /app/ deployment (the node's random_url_path is empty).
+//
+// deploy.sh rewrites both this file and the static <base> in index.html from
+// the node's random_url_path. When editing manually, set `base` here and, if
+// the app is NOT mounted in an "app" directory, the <base> href in index.html
+// too. On deep links the value here also wins over the path recovered from
+// the URL ("…/app/…").
+window.__FM_CONFIG__ = { base: '/app/' }
